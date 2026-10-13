@@ -1,22 +1,24 @@
 package main
 
 import (
-	"encoding/json"
-	"log/slog"
+	"context"
+	"github.com/romankretov/goledger/internal/database"
+	"github.com/romankretov/goledger/internal/httpapi"
 	"net/http"
-	"os"
+	"time"
 )
 
 func main() {
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
-	mux := http.NewServeMux()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	connString := "postgres://goledger:123456@127.0.0.1:5432/goledger?sslmode=disable"
 
-	mux.HandleFunc("GET /v1/healthz", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
-		logger.Info("request hit health")
-	})
+	db, err := database.Connect(ctx, connString)
+	if err != nil {
+		panic(err)
+	}
+	cancel()
+	store := database.NewStorage(db)
+	mux := httpapi.NewRouter(store)
 
 	server := &http.Server{
 		Addr:    ":5123",
