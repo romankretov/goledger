@@ -10,6 +10,7 @@ func NewRouter(store *database.Storage) *http.ServeMux {
 	handler := NewHandler(store)
 
 	mux.HandleFunc("GET /healthz", handler.HandleHealthz)
+	mux.HandleFunc("GET /readyz", handler.HandleReadyz)
 
 	return mux
 }

@@ -37,3 +37,11 @@ func Connect(ctx context.Context, dsn string) (*sql.DB, error) {
 
 	return db, nil
 }
+
+func (s *Storage) Ping(ctx context.Context) (bool, error) {
+	err := s.db.PingContext(ctx)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}

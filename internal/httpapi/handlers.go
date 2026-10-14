@@ -25,3 +25,17 @@ func (h *Handler) HandleHealthz(w http.ResponseWriter, r *http.Request) {
 		h.logger.Info("GET /healthz", "request", r)
 	}
 }
+
+func (h *Handler) HandleReadyz(w http.ResponseWriter, r *http.Request) {
+	success, err := h.store.Ping(r.Context())
+	if !success {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
+
+}
