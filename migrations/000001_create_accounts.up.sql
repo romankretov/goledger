@@ -1,0 +1,6 @@
+CREATE TABLE accounts (
+  id UUID PRIMARY KEY,
+  currency VARCHAR(3) NOT NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'active',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
